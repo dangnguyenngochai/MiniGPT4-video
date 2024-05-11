@@ -207,6 +207,7 @@ def get_arguments():
     parser.add_argument("--max_new_tokens", type=int, default=512, help="max number of generated tokens")
     parser.add_argument("--lora_r", type=int, default=64, help="lora rank of the model")
     parser.add_argument("--lora_alpha", type=int, default=16, help="lora alpha")
+    parser.add_argument("--gradio_port", type=int, default=7860, help="Make gradio port different from other tunnels port")
     parser.add_argument(
         "--options",
         nargs="+",
