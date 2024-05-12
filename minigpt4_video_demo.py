@@ -127,12 +127,19 @@ def generate_subtitles(video_path):
         print("error",video_path)
         return None
     
-
 def run (video_path,instruction,model,vis_processor,gen_subtitles=True):
     if gen_subtitles:
         subtitle_path=generate_subtitles(video_path)
     else :
         subtitle_path=None
+
+    global MODEL
+    global VIS_PROCESSOR
+
+    MODEL, VIS_PROCESSOR = get_models(args)
+    model = MODEL
+    vis_processor = VIS_PROCESSOR
+
     prepared_images,prepared_instruction=prepare_input(vis_processor,video_path,subtitle_path,instruction)
     if prepared_images is None:
         return "Please re-upload the video while changing the instructions."
@@ -216,22 +223,29 @@ def get_arguments():
                 "change to --cfg-options instead.",
     )
     return parser.parse_args()
+
+MODEL = None
+VIS_PROCESSOR = None
+
 args=get_arguments()
-model, vis_processor = init_model(args)
 conv = CONV_VISION.copy()
 conv.system = ""
 inference_subtitles_folder="workspace/inference_subtitles"
 os.makedirs(inference_subtitles_folder,exist_ok=True)
 existed_subtitles={}
 for sub in os.listdir(inference_subtitles_folder):
-    existed_subtitles[sub.split('.')[0]]=True
+    existed_subtitles[sub.split('.')[0]]=True 
 
 def gradio_demo_local(video_path,has_sub,instruction):
+    model = MODEL
+    vis_processor = VIS_PROCESSOR
     pred=run(video_path,instruction,model,vis_processor,gen_subtitles=has_sub)
     return pred
 
 def gradio_demo_youtube(youtube_url,has_sub,instruction):
     video_path=get_video_url(youtube_url,has_sub)
+    model = MODEL
+    vis_processor = VIS_PROCESSOR
     pred=run(video_path,instruction,model,vis_processor,gen_subtitles=has_sub)
     return pred
     
@@ -240,7 +254,10 @@ def use_example(url,has_sub_1,q):
     youtube_link.value=url
     has_subtitles.value=has_sub_1
     question.value=q
-    
+
+def get_models(args):
+    model, vis_processor = init_model(args)
+    return model, vis_processor
 
 title = """<h1 align="center">MiniGPT4-video 🎞️🍿</h1>"""
 description = """<h5>This is the demo of MiniGPT4-video Model.</h5>"""
