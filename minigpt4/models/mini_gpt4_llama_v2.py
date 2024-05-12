@@ -135,7 +135,7 @@ class MiniGPT4_llama_v2(Blip2Base):
                 llama_model,
                 torch_dtype=torch.float16,
                 # torch_dtype = torch.bfloat16,
-                load_in_8bit=True,
+                load_in_4bit=True,
                 # device_map = "balanced"
                 # device_map="auto",
                 device_map={'':torch.cuda.current_device()},
